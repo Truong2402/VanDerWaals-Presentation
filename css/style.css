@@ -95,6 +95,37 @@ html, body {
   perspective: 2000px;
 }
 
+/* ==========================================================================
+   Projector & Fullscreen Mode (Edge-to-Edge 100% Fit)
+   On 4:3 Projector: Fills 100% wall-to-wall screen without borders or gaps.
+   On 16:9 Projector: Touches top & bottom edges with pure black sidebars.
+   ========================================================================== */
+:fullscreen .presentation-container,
+:-webkit-full-screen .presentation-container,
+.presentation-container.is-fullscreen {
+  background: #000 !important;
+}
+
+:fullscreen .stage-wrapper,
+:-webkit-full-screen .stage-wrapper,
+.presentation-container.is-fullscreen .stage-wrapper {
+  padding: 0 !important;
+}
+
+:fullscreen .presentation-stage,
+:-webkit-full-screen .presentation-stage,
+.presentation-container.is-fullscreen .presentation-stage {
+  width: min(100vw, calc(100vh * 4 / 3)) !important;
+  height: min(100vh, calc(100vw * 3 / 4)) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.presentation-container.hide-cursor,
+.presentation-container.hide-cursor * {
+  cursor: none !important;
+}
+
 @media (max-width: 768px) {
   .presentation-stage {
     width: min(100vw, calc(100vh * 4 / 3));

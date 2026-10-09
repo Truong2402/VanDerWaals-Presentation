@@ -364,13 +364,17 @@
     }
   }
 
-  // --- HUD Auto-Hide ---
+  // --- HUD Auto-Hide & Idle Cursor Hide ---
   function resetHudTimeout() {
     floatingHud.classList.remove('hidden');
+    container.classList.remove('hide-cursor');
     if (hudHideTimeout) clearTimeout(hudHideTimeout);
     hudHideTimeout = setTimeout(() => {
       if (!overviewModal.classList.contains('open') && !notesDrawer.classList.contains('open') && !helpModal.classList.contains('open')) {
         floatingHud.classList.add('hidden');
+        if (!isLaserActive) {
+          container.classList.add('hide-cursor');
+        }
       }
     }, 2800);
   }
@@ -500,6 +504,13 @@
         else prevSlide();
       }
     }, { passive: true });
+
+    // Track fullscreen changes to toggle class
+    document.addEventListener('fullscreenchange', () => {
+      const isFS = !!document.fullscreenElement;
+      container.classList.toggle('is-fullscreen', isFS);
+      document.getElementById('btn-fullscreen').classList.toggle('active', isFS);
+    });
   }
 
   // Run on page load
