@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Lực Van der Waals - Bản Trình Chiếu HTML5 Chuyên Nghiệp</title>
+  <meta name="description" content="Bản trình chiếu HTML5 chất lượng cao về Lực Van der Waals - Thiết kế chính xác, không méo hình, hiệu ứng mượt mà.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>">
+</head>
+<body>
+
+  <div class="presentation-container" id="presentation-container">
+    <div class="stage-wrapper">
+      
+      <!-- 4:3 Aspect Ratio Stage (Guaranteed Zero Distortion) -->
+      <main class="presentation-stage" id="presentation-stage">
+        
+        <!-- Double-buffered slide layers -->
+        <div class="slide-viewport" id="slide-viewport">
+          
+          <div class="slide-layer active" id="slide-layer-a">
+            <img class="slide-img" src="" alt="Slide">
+          </div>
+
+          <div class="slide-layer" id="slide-layer-b">
+            <img class="slide-img" src="" alt="Slide">
+          </div>
+
+          <!-- Dynamic Molecule GIF Overlay for Slide 7 -->
+          <img id="molecule-gif-overlay" class="molecule-gif-overlay" src="assets/vdw_molecules.gif" alt="Hoạt ảnh tương tác phân tử" style="display: none;">
+
+          <!-- Laser Pointer Dot -->
+          <div class="laser-layer" id="laser-layer">
+            <div class="laser-dot" id="laser-dot"></div>
+          </div>
+
+          <!-- Invisible Click Hotspots for Easy Click Navigation -->
+          <div class="hotspot hotspot-prev" id="hotspot-prev" title="Slide trước (←)"></div>
+          <div class="hotspot hotspot-next" id="hotspot-next" title="Slide tiếp theo (→)"></div>
+          
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="presentation-progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+      </main>
+
+    </div>
+
+    <!-- Floating Glassmorphism HUD Controller -->
+    <nav class="floating-hud" id="floating-hud" aria-label="Điều khiển trình chiếu">
+      <!-- Previous Button -->
+      <button class="hud-btn" id="btn-prev" data-tooltip="Slide trước (←)" aria-label="Slide trước">
+        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
+
+      <!-- Slide Counter -->
+      <div class="slide-counter" id="slide-counter" data-tooltip="Mục lục slide (O)" title="Mở danh sách slide">
+        <span class="current-idx" id="current-idx">1</span>
+        <span class="counter-sep">/</span>
+        <span class="total-count" id="total-count">21</span>
+      </div>
+
+      <!-- Next Button -->
+      <button class="hud-btn" id="btn-next" data-tooltip="Slide tiếp (→ hoặc Phím cách)" aria-label="Slide tiếp">
+        <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+      </button>
+
+      <div class="hud-divider"></div>
+
+      <!-- Slide Sorter Grid Button -->
+      <button class="hud-btn" id="btn-overview" data-tooltip="Tổng quan các slide (O)" aria-label="Tổng quan slide">
+        <svg viewBox="0 0 24 24"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg>
+      </button>
+
+      <!-- Laser Pointer Toggle Button -->
+      <button class="hud-btn" id="btn-laser" data-tooltip="Bút laser chỉ điểm (L)" aria-label="Bút laser">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+      </button>
+
+      <!-- Auto-Play Slideshow Button -->
+      <button class="hud-btn" id="btn-autoplay" data-tooltip="Tự động trình chiếu (P)" aria-label="Tự động chạy">
+        <svg class="autoplay-ring" viewBox="0 0 38 38">
+          <circle id="autoplay-ring-circle" cx="19" cy="19" r="15.5"/>
+        </svg>
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+
+      <!-- Speaker Notes Button -->
+      <button class="hud-btn" id="btn-notes" data-tooltip="Ghi chú diễn giả (N)" aria-label="Ghi chú">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+      </button>
+
+      <div class="hud-divider"></div>
+
+      <!-- Fullscreen Button -->
+      <button class="hud-btn" id="btn-fullscreen" data-tooltip="Toàn màn hình (F)" aria-label="Toàn màn hình">
+        <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+
+      <!-- Help Shortcuts Button -->
+      <button class="hud-btn" id="btn-help" data-tooltip="Phím tắt trợ giúp (?)" aria-label="Trợ giúp phím tắt">
+        <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+      </button>
+    </nav>
+
+    <!-- Overview / Slide Sorter Modal -->
+    <div class="overview-modal" id="overview-modal">
+      <div class="overview-header">
+        <div class="overview-title">
+          Danh mục tất cả các Slide
+          <span>21 slide</span>
+        </div>
+        <button class="overview-close-btn" id="overview-close" aria-label="Đóng tổng quan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <div class="overview-grid" id="overview-grid">
+        <!-- Rendered dynamically by presentation.js -->
+      </div>
+    </div>
+
+    <!-- Speaker Notes & Details Drawer -->
+    <aside class="notes-drawer" id="notes-drawer">
+      <div class="notes-header">
+        <div class="notes-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--primary-accent)"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
+          Ghi chú Diễn giả
+        </div>
+        <button class="overview-close-btn" id="notes-close" aria-label="Đóng ghi chú">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      <div class="notes-body">
+        <div class="notes-section">
+          <div class="notes-label" id="notes-slide-num">Slide 1 / 21</div>
+          <div class="notes-content" id="notes-category" style="font-weight: 600; color: #60a5fa;">Mở đầu</div>
+        </div>
+        <div class="notes-section">
+          <div class="notes-label">Tiêu đề Slide</div>
+          <div class="notes-content" id="notes-title" style="font-size: 16px; font-weight: 700;">Tiêu đề</div>
+        </div>
+        <div class="notes-section">
+          <div class="notes-label">Tóm lược nội dung</div>
+          <div class="notes-content" id="notes-desc">Nội dung tóm tắt</div>
+        </div>
+        <div class="notes-section">
+          <div class="notes-label">Văn bản chi tiết</div>
+          <div class="notes-content" id="notes-transcript" style="white-space: pre-wrap; font-size: 13px; color: #9ca3af;">Trích dẫn...</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Keyboard Shortcuts Help Modal -->
+    <div class="help-modal" id="help-modal">
+      <div class="help-dialog">
+        <div class="help-header">
+          <div class="help-title">Phím tắt trình chiếu</div>
+          <button class="overview-close-btn" id="help-close" aria-label="Đóng">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+        </div>
+        <div class="shortcut-list">
+          <div class="shortcut-item">
+            <span>Slide tiếp theo</span>
+            <span class="kbd">→ / Space</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Slide trước đó</span>
+            <span class="kbd">← / Backspace</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Về Slide đầu / cuối</span>
+            <span class="kbd">Home / End</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Toàn màn hình</span>
+            <span class="kbd">F</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Xem tất cả Slide</span>
+            <span class="kbd">O / G</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Bật/Tắt Laser</span>
+            <span class="kbd">L</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Tự động trình chiếu</span>
+            <span class="kbd">P</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Ghi chú diễn giả</span>
+            <span class="kbd">N</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Màn hình đen (Tạm dừng)</span>
+            <span class="kbd">B</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Màn hình trắng</span>
+            <span class="kbd">W</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Đóng hộp thoại</span>
+            <span class="kbd">Esc</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Bảng trợ giúp này</span>
+            <span class="kbd">? / H</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/slides_data.js"></script>
+  <script src="js/presentation.js"></script>
+</body>
+</html>

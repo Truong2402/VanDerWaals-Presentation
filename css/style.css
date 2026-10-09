@@ -1,0 +1,754 @@
+/* ==========================================================================
+   Van Der Waals Presentation - HTML5 Modern Deck
+   High-Fidelity, Zero-Distortion 4:3 Presentation Engine
+   ========================================================================== */
+
+:root {
+  --bg-dark: #0a0b0e;
+  --bg-surface: #14161d;
+  --bg-glass: rgba(20, 22, 29, 0.75);
+  --border-glass: rgba(255, 255, 255, 0.12);
+  --primary-accent: #3b82f6;
+  --primary-glow: rgba(59, 130, 246, 0.5);
+  --danger-accent: #ef4444;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  user-select: none;
+}
+
+/* ==========================================================================
+   Presentation Theater & Responsive Stage (Zero Distortion)
+   Formula: aspect-ratio: 4/3, contained perfectly within any screen
+   ========================================================================== */
+.presentation-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #1a1c24 0%, #08090b 100%);
+  overflow: hidden;
+}
+
+/* Blank Screen overlays for presentation control (B / W keys) */
+.presentation-container.blank-black::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 999;
+}
+.presentation-container.blank-white::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  z-index: 999;
+}
+
+.stage-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+}
+
+@media (max-width: 768px) {
+  .stage-wrapper {
+    padding: 0;
+  }
+}
+
+.presentation-stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  max-width: 100vw;
+  max-height: 100vh;
+  width: min(calc(100vw - 32px), calc((100vh - 32px) * 4 / 3));
+  height: min(calc(100vh - 32px), calc((100vw - 32px) * 3 / 4));
+  background-color: #000;
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  overflow: hidden;
+  perspective: 2000px;
+}
+
+@media (max-width: 768px) {
+  .presentation-stage {
+    width: min(100vw, calc(100vh * 4 / 3));
+    height: min(100vh, calc(100vw * 3 / 4));
+    border-radius: 0;
+  }
+}
+
+/* Slide viewport layers */
+.slide-viewport {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.slide-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.slide-layer.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ==========================================================================
+   Slide 7: Dynamic Molecular GIF Overlay
+   Aligned precisely to the molecule container coordinates (4:3 ratio)
+   ========================================================================== */
+.molecule-gif-overlay {
+  position: absolute;
+  left: 20%;
+  top: 27.5%;
+  width: 60%;
+  height: 45%;
+  object-fit: contain;
+  z-index: 15;
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Transition Animations (Matching PowerPoint Timing & Style)
+   ========================================================================== */
+
+/* 1. Peel Off 3D Curl (Slide 1 -> 2, duration 1.25s) */
+.slide-layer.peel-off-out {
+  z-index: 20;
+  visibility: visible;
+  animation: peelOffExit 1.25s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  transform-origin: top left;
+}
+.slide-layer.peel-off-in {
+  z-index: 10;
+  visibility: visible;
+  opacity: 1;
+  animation: peelOffEnter 1.25s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes peelOffExit {
+  0% {
+    transform: rotate3d(0, 0, 0, 0deg) translate3d(0, 0, 0);
+    filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+    opacity: 1;
+  }
+  40% {
+    filter: drop-shadow(-20px 20px 30px rgba(0,0,0,0.6));
+  }
+  100% {
+    transform: rotate3d(-0.8, 1, 0.2, -90deg) translate3d(-40%, -20%, 300px);
+    filter: drop-shadow(-40px 40px 50px rgba(0,0,0,0.8));
+    opacity: 0;
+  }
+}
+
+@keyframes peelOffEnter {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 2. Morph Transition (Slide 2 -> 3, duration 2.0s) */
+.slide-layer.morph-out {
+  z-index: 10;
+  visibility: visible;
+  animation: morphExit 2.0s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.slide-layer.morph-in {
+  z-index: 20;
+  visibility: visible;
+  animation: morphEnter 2.0s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes morphExit {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  50% {
+    opacity: 0.5;
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+    filter: blur(6px);
+  }
+}
+
+@keyframes morphEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(4px);
+  }
+  50% {
+    opacity: 0.6;
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+
+/* 3. Smooth Fade Transition (Slides 4-21, duration 0.7s) */
+.slide-layer.fade-out {
+  z-index: 10;
+  visibility: visible;
+  animation: fadeOut 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.slide-layer.fade-in {
+  z-index: 20;
+  visibility: visible;
+  animation: fadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ==========================================================================
+   Click Hotspots for Easy Navigation
+   ========================================================================== */
+.hotspot {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 25%;
+  z-index: 25;
+  cursor: pointer;
+  background: transparent;
+}
+.hotspot-prev {
+  left: 0;
+}
+.hotspot-next {
+  right: 0;
+}
+
+/* ==========================================================================
+   Progress Bar
+   ========================================================================== */
+.presentation-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: 30;
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa, #10b981);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
+}
+
+/* ==========================================================================
+   Laser Pointer Canvas & Cursor
+   ========================================================================== */
+.laser-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.laser-layer.active {
+  opacity: 1;
+}
+.laser-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ff2a2a;
+  box-shadow: 0 0 12px 4px #ff2a2a, 0 0 24px 8px rgba(255, 50, 50, 0.6);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: transform 0.04s ease-out;
+}
+
+/* ==========================================================================
+   Floating Glassmorphism HUD Controller
+   Auto-hides on inactivity
+   ========================================================================== */
+.floating-hud {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: 40px;
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 50;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+}
+
+.floating-hud.hidden {
+  transform: translateX(-50%) translateY(90px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hud-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.hud-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.08);
+}
+
+.hud-btn.active {
+  color: #fff;
+  background: var(--primary-accent);
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.hud-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.hud-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--border-glass);
+}
+
+.slide-counter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+  padding: 0 6px;
+  cursor: pointer;
+}
+.slide-counter:hover {
+  color: var(--primary-accent);
+}
+.current-idx {
+  font-weight: 700;
+  color: #fff;
+}
+.counter-sep {
+  opacity: 0.5;
+}
+.total-count {
+  opacity: 0.7;
+}
+
+/* Auto-play Timer Ring */
+.autoplay-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 38px;
+  height: 38px;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+.autoplay-ring circle {
+  fill: none;
+  stroke: var(--primary-accent);
+  stroke-width: 2.5;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+/* ==========================================================================
+   Slide Sorter / Overview Modal
+   ========================================================================== */
+.overview-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 9, 12, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 32px;
+}
+
+.overview-modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.overview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  max-width: 1400px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.overview-title {
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.overview-title span {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.overview-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-glass);
+  color: var(--text-main);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.overview-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  overflow-y: auto;
+  max-width: 1400px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 8px 8px 32px 8px;
+}
+
+.overview-card {
+  background: var(--bg-surface);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: var(--border-glass);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+.overview-card.active {
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.overview-card-thumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  background: #000;
+}
+.overview-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overview-card-info {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.overview-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.overview-card-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-accent);
+}
+.overview-card-tag {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.overview-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   Presenter Info / Notes Drawer (N key)
+   ========================================================================== */
+.notes-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  height: 100%;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-glass);
+  box-shadow: -15px 0 35px rgba(0, 0, 0, 0.6);
+  z-index: 90;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-drawer.open {
+  transform: translateX(0);
+}
+
+.notes-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-glass);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.notes-title {
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notes-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.notes-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  padding: 14px;
+}
+.notes-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--primary-accent);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.notes-content {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+
+/* ==========================================================================
+   Shortcuts Modal (? key)
+   ========================================================================== */
+.help-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  padding: 20px;
+}
+
+.help-modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.help-dialog {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  max-width: 520px;
+  width: 100%;
+  padding: 28px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+}
+
+.help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.help-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.shortcut-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.kbd {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ==========================================================================
+   Tooltips
+   ========================================================================== */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]:hover::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 17, 23, 0.95);
+  color: #fff;
+  font-size: 11px;
+  padding: 5px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  z-index: 60;
+}
